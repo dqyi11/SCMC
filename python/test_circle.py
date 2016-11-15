@@ -11,8 +11,14 @@ from scmc import *
 # x**2 + y**2 = 1
 
 def circle_func(sample):    
-    out = np.zeros(1)
-    out[0] = sample[0]**2 + sample[1]**2 - 1
+    out = np.zeros(2)
+    #out[0] = sample[0]**2 + sample[1]**2 - 1
+    if np.abs(sample[0]) > 1:
+        out[0] = 10
+        out[1] = 10
+    else:
+        out[0] = np.sqrt(1-sample[0]**2) - sample[1]
+        out[1] = - np.sqrt(1-sample[1]**2) - sample[1]
     return out
 
 if __name__ == '__main__':
