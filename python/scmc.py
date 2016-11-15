@@ -64,7 +64,7 @@ def scmc(N, dim, M, L, srng, constraint_func, tau_T= 1e-3, qt = 1):
     lpden_seq = []
     W_seq = []
     tau_seq = [np.inf]
-    b = np.arange(1.5,.1,L)
+    b = np.arange(1.5,.1,(.1-1.5)/L)
     a = np.zeros((L,dim))
     tau_seq_0 = np.hstack(([np.inf], b**7))
     
