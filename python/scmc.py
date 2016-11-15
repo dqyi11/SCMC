@@ -6,6 +6,7 @@ Created on Nov 14, 2016
 
 import numpy as np
 from scipy.stats import norm
+from scipy import optimize
 
 
 def unrestricted_sampling(N, dim, srng):
@@ -30,7 +31,7 @@ def Gibbs(x, q, d, a, nu_t, lpden):
     newx[d] = newx[d] + delta
     lpnum = log_posterior(newx, nu_t)
     ratio = lpnum - lpden
-    prob = np.min([1, exp(ratio)])
+    prob = np.min([1, np.exp(ratio)])
     u = np.random.rand()
     if u <= prob:
         x = newx
@@ -63,14 +64,16 @@ def scmc(N, dim, M, L, srng, constraint_func, tau_T= 1e-3, qt = 1):
     lpden_seq = []
     W_seq = []
     tau_seq = [np.inf]
-    a = []
+    b = np.arange(1.5,.1,L)
+    a = np.zeros((L,dim))
+    tau_seq_0 = np.hstack(([np.inf], b**7))
     
     # initial sampling on the hypercube
     sample0 = unrestricted_sampling(N, dim, srng)
     sample_seq.append(sample0)
     lpden = np.zeros(N)
     for i in range(N):
-        lpden[i] = log_posterior(sample0[i], tau_seq[0])
+        lpden[i] = log_posterior(sample0[i], tau_seq[0], constraint_func)
     lpden_seq.append(lpden)
     W_seq.append(np.ones(N)*(1.0/N))
     
@@ -83,37 +86,32 @@ def scmc(N, dim, M, L, srng, constraint_func, tau_T= 1e-3, qt = 1):
         newlpden = lpden_seq[t-1]
         newWt = W_seq[t-1]
         
-        if adapt_seq(nu = nuseq_T, nu0 = nuseq[t-1], t = t, N = N, sample = newsample, Wt = newWt) > 0:
-            tau_seq[t] = nuseq_T
-        elif adapt_seq(nu = nuseq_T, nu0 = nuseq[t-1], t = t, N = N, sample = newsample, Wt = newWt) > 0:
-            tau_nuseq[t] = nuseq_T 
+        if adapt_seq(tau_T, tau_seq[t-1], t, N, newsample, newWt, constraint_func) > 0:
+            tau_seq[t] = tau_T 
         else:
             lb = tau_T
             if t < 3:
-                lb = min(.1, nuseq_0[t])
+                lb = np.min([.1, tau_seq_0[t]])
             ub = 1e5
             if t!= 2:
-                ub = nuseq_0[t-1]   
+                ub = tau_seq_0[t-1]   
                 
-            tau_nuseq[t] =   
-                      uniroot(adapt_seq, 
-                              interval = [lb, ub], 
-                              nu0 = nuseq[t-1], t = t, N = N, sample = newsample, Wt = newWt)$root)
-        
+            tau_seq[t] = optimize.brenth(adapt_seq, lb, ub, args= (tau_seq[t-1], t, N, newsample, newWt, constraint_func))
+                
         wt = np.zeros(N)
         for i in range(N):
             term = constraint_func(newsample[i])
             constraint1 = np.sum( np.log( norm.cdf( - term / tau_seq[t] )  ) )
             constraint2 = np.sum( np.log( norm.cdf( - term / tau_seq[t-1]) ) )
             wt[i] = constraint1 - constraint2 
-        newWt = newWt * exp(wt)
+        newWt = newWt * np.exp(wt)
         # normalize
         newWt = newWt / np.sum(newWt)
         
         ESS.append( 1 / sum(newWt**2) )
         
         # resample with weight
-        index = np.random.choice(1:N, size=N, p=newWt, replace=True )
+        index = np.random.choice(np.arange(0,N,1), size=N, p=newWt, replace=True )
         newsample = newsample[index]
         newlpden = newlpden[index]
         newWt = np.ones(N)*(1.0/N)

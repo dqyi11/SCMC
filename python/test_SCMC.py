@@ -9,15 +9,17 @@ import matplotlib.pyplot as plt
 from scmc import *
 
 def crecsent(sample):    
-    out = [sample[1] - np.sqrt(14 * sample[2] ^ 2 + 2), - (sample[1] - np.sqrt(33*sample[2] ^ 2 + 1))]
+    out = np.zeros(2)
+    out[0] = sample[0] - np.sqrt(14 * sample[1]**2 + 2)
+    out[1] =  - (sample[0] - np.sqrt(33*sample[1]**2 + 1))
     return out
 
 def mixture(sample, l= [.4,.1,.1,.03], u = [.6, .47, .47, .08]):
     return [abs(sum(sample) - 1), l - sample, sample - u]
 
 if __name__ == '__main__':
-    
-    srng0 = []
+   
+    srng0 = [[-1,1],[-1,1]]
     sample0 = scmc(N=1000, dim=2, M=10, L=25, srng=srng0, constraint_func=crecsent, tau_T= 1e-3, qt = 1)
     
     fig1 = plt.figure()
