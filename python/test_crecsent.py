@@ -6,7 +6,8 @@ Created on Nov 14, 2016
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scmc import *
+#from scmc import *
+from scmc2 import *
 
 def crecsent(sample):    
     out = np.zeros(2)
