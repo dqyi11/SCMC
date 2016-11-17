@@ -20,8 +20,8 @@ if __name__ == '__main__':
     fig2 = plt.figure()
     ax2 = fig2.add_subplot(111, projection='3d')
     ax2.scatter(X2[:,0],X2[:,1],X2[:,2])
-    ax2.set_xlabel('Dim 1')
-    ax2.set_ylabel('Dim 2')
-    ax2.set_zlabel('Dim 3')
+    ax2.set_xlabel('X')
+    ax2.set_ylabel('Y')
+    ax2.set_zlabel('Z')
     
     plt.show()

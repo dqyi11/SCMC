@@ -6,8 +6,7 @@ Created on Nov 14, 2016
 
 import numpy as np
 import matplotlib.pyplot as plt
-#from scmc import *
-from scmc2 import *
+from scmc import *
 
 def crecsent(sample):    
     out = np.zeros(2)
@@ -18,7 +17,7 @@ def crecsent(sample):
 if __name__ == '__main__':
    
     srng0 = [[-1,1],[-1,1]]
-    sample0 = scmc(N=500, dim=2, M=20, L=25, srng=srng0, constraint_func=crecsent, tau_T= 1e-20, qt = 1)
+    sample0 = scmc(N=1000, dim=2, M=10, srng=srng0, constraint_func=crecsent, tau_T= 1e3)
     
     yl = np.sqrt(1.0/19)
     Y = np.arange(-yl, yl, 0.01)
@@ -30,8 +29,8 @@ if __name__ == '__main__':
     ax1.plot(X1, Y, color='r')
     ax1.plot(X2, Y, color='r')
     ax1.scatter(sample0[:,0],sample0[:,1],color='b')
-    ax1.set_xlabel('Dim 1')
-    ax1.set_ylabel('Dim 2')
+    ax1.set_xlabel('X')
+    ax1.set_ylabel('Y')
     
     plt.show()
     

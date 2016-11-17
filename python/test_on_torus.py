@@ -6,6 +6,7 @@ Created on Nov 15, 2016
    
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from scmc import *
 import math
 
@@ -18,13 +19,14 @@ def on_torus_func(sample):
 
 if __name__ == '__main__':
     
-    srng0 = [[-1,1],[-1,1]]
-    sample0 = scmc(N=100000, dim=3, M=20, L=25, srng=srng0, constraint_func=on_torus_func, tau_T= 1e-3, qt = 1)
+    srng0 = [[-1,1],[-1,1],[-1,1]]
+    sample0 = scmc(N=10000, dim=3, M=10, srng=srng0, constraint_func=on_torus_func, tau_T= 1e3)
     
     fig1 = plt.figure()
-    ax1 =fig1.add_subplot(111)
-    ax1.scatter(sample0[:,0],sample0[:,1])
-    ax1.set_xlabel('Dim 1')
-    ax1.set_ylabel('Dim 2')
+    ax1 =fig1.add_subplot(111, projection='3d')
+    ax1.scatter(sample0[:,0],sample0[:,1],sample0[:,2])
+    ax1.set_xlabel('X')
+    ax1.set_ylabel('Y')
+    ax1.set_zlabel('Z')
     
     plt.show()
