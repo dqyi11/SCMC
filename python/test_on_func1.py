@@ -18,20 +18,15 @@ if __name__ == '__main__':
     
     srng0 = [[0,1],[0,2]]
     def on_func1(sample):    
-        out = np.zeros(1)
-        if sample[0] < srng0[0][0]: 
-            out[0] = 10 #np.abs(sample[0] - srng0[0][0])
-        elif sample[0] > srng0[0][1]:    
-            out[0] = 10 #np.abs(sample[0] - srng0[0][1])
-        elif sample[1] < srng0[1][0]: 
-            out[0] = 10 #np.abs(sample[1] - srng0[1][0])
-        elif sample[1] > srng0[1][1]:    
-            out[0] = 10 #np.abs(sample[1] - srng0[1][1])    
-        else:
-            out[0] = np.abs(func1(sample[0]) - sample[1]) 
+        out = np.zeros(5)
+        out[0] =  srng0[0][0] - sample[0]
+        out[1] =  sample[0] - srng0[0][1]  
+        out[2] = srng0[1][0] - sample[1]
+        out[3] = sample[1] - srng0[1][1]    
+        out[4] = np.abs(func1(sample[0]) - sample[1]) 
         return out
     
-    sample0 = scmc(N=100, dim=2, M=20, srng=srng0, constraint_func=on_func1, tau_T= 1e3)
+    sample0 = scmc(N=500, dim=2, M=20, srng=srng0, constraint_func=on_func1, tau_T= 1e3)
     
     X = np.arange(srng0[0][0], srng0[0][1], 0.01)
     Y = func1(X)

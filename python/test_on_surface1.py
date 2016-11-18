@@ -12,14 +12,21 @@ from scmc import *
 
 # (2 - sqrt(x**2+y**2))**2 + z**2 = 1
 
-def on_surface1_func(sample):    
-    out = np.zeros(1)
-    out[0] = np.abs( sample[2] - sample[0] * np.cos(sample[1]) )
-    return out
+
 
 if __name__ == '__main__':
     
     srng0 = [[-1,1],[0,np.pi],[-1,1]]
+    
+    def on_surface1_func(sample):    
+        out = np.zeros(5)
+        out[0] =  srng0[0][0] - sample[0]
+        out[1] =  sample[0] - srng0[0][1]  
+        out[2] = srng0[1][0] - sample[1]
+        out[3] = sample[1] - srng0[1][1]  
+        out[4] = np.abs( sample[2] - sample[0] * np.cos(sample[1]) )
+        return out
+    
     sample0 = scmc(N=5000, dim=3, M=10, srng=srng0, constraint_func=on_surface1_func, tau_T= 1e4)
     
     X = np.arange(-1,1,0.01)
