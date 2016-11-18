@@ -19,12 +19,14 @@ if __name__ == '__main__':
     srng0 = [[-1,1],[0,np.pi],[-1,1]]
     
     def on_surface1_func(sample):    
-        out = np.zeros(5)
+        out = np.zeros(7)
         out[0] =  srng0[0][0] - sample[0]
         out[1] =  sample[0] - srng0[0][1]  
         out[2] = srng0[1][0] - sample[1]
         out[3] = sample[1] - srng0[1][1]  
-        out[4] = np.abs( sample[2] - sample[0] * np.cos(sample[1]) )
+        out[4] = srng0[2][0] - sample[2]
+        out[5] = sample[2] - srng0[2][1]  
+        out[6] = np.abs( sample[2] - sample[0] * np.cos(sample[1]) )
         return out
     
     sample0 = scmc(N=5000, dim=3, M=10, srng=srng0, constraint_func=on_surface1_func, tau_T= 1e4)
