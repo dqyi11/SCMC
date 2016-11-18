@@ -12,8 +12,6 @@ from scmc import *
 
 # (2 - sqrt(x**2+y**2))**2 + z**2 = 1
 
-
-
 if __name__ == '__main__':
     
     srng0 = [[-1,1],[0,np.pi],[-1,1]]
@@ -31,8 +29,8 @@ if __name__ == '__main__':
     
     sample0 = scmc(N=5000, dim=3, M=10, srng=srng0, constraint_func=on_surface1_func, tau_T= 1e4)
     
-    X = np.arange(-1,1,0.01)
-    Y = np.arange(0, 2*np.pi, 0.01)
+    X = np.arange(-1,1,0.001)
+    Y = np.arange(0, np.pi, 0.001)
     X, Y = np.meshgrid(X, Y)
     Z = X * np.cos(Y)
     
