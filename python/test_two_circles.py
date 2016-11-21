@@ -18,9 +18,9 @@ def two_circles_func(sample):
 
 if __name__ == '__main__':
     
-    srng0 = [[-4,4],[-1,1]]
-    RV_X = UniformRandomVariable(2, srng0)  
-    sample0 = scmc(RV_X, N=1000, M=10, constraint_func=two_circles_func, tau_T= 1e3)
+    #srng0 = [[-4,4],[-1,1]]
+    RV_X = NormalRandomVariable(2, [0.,0.], [.5,.5])  
+    sample0 = scmc(RV_X, N=500, M=10, constraint_func=two_circles_func, tau_T= 1e3)
     
     circle1 = plt.Circle((-2,0),1,color='r', fill=False)   
     circle2 = plt.Circle((2,0),1,color='r', fill=False)   

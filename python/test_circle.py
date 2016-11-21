@@ -18,8 +18,9 @@ def circle_func(sample):
 if __name__ == '__main__':
     
     srng0 = [[-1,1],[-1,1]]
-    RV_X = UniformRandomVariable(2, srng0)
-    sample0 = scmc(RV_X, N=1000, M=10, constraint_func=circle_func, tau_T= 1e3)
+    #RV_X = UniformRandomVariable(2, srng0)
+    RV_X = NormalRandomVariable(2, [0.,1.], [.5,.5])  
+    sample0 = scmc(RV_X, N=5000, M=10, constraint_func=circle_func, tau_T= 1e3)
     
     circle1 = plt.Circle((0,0),1,color='r', fill=False)   
     fig1 = plt.figure()

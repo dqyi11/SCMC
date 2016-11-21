@@ -45,6 +45,26 @@ class UniformRandomVariable(RandomVariable):
             lp += self.RVS[i].logpdf(x[i])
         return lp       
 
+class NormalRandomVariable(RandomVariable):    
+    
+    def __init__(self, dim, mu, var):
+        self.dim = dim
+        self.RVS = []
+        for i in range(self.dim):
+            X = norm( loc=mu[i], scale=var[i] )
+            self.RVS.append(X)    
+        
+    def sample(self, N):
+        ins = np.zeros((N,self.dim))
+        for i in range(self.dim):
+            ins[:,i] = self.RVS[i].rvs(N)
+        return ins
+           
+    def logpdf(self, x):
+        lp = 0.0
+        for i in range(self.dim):
+            lp += self.RVS[i].logpdf(x[i])
+        return lp       
 
 # log-posterior (equivalent to the constraint if a uniform sample is drawn)
 def log_posterior(sample, tau_t, constraint_func, RV_X):

@@ -17,7 +17,8 @@ def crecsent(sample):
 if __name__ == '__main__':
    
     srng0 = [[-1,1],[-1,1]]
-    RV_X = UniformRandomVariable(2, srng0)  
+    #RV_X = UniformRandomVariable(2, srng0)  
+    RV_X = NormalRandomVariable(2, [0.,0.], [.5,.5])  
     sample0 = scmc(RV_X, N=1000, M=10, constraint_func=crecsent, tau_T= 1e3)
     
     yl = np.sqrt(1.0/19)
