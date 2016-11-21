@@ -27,7 +27,8 @@ if __name__ == '__main__':
         out[6] = np.abs( sample[2] - sample[0] * np.cos(sample[1]) )
         return out
     
-    sample0 = scmc(N=1000, dim=3, M=10, srng=srng0, constraint_func=on_surface1_func, tau_T= 1e4)
+    RV_X = UniformRandomVariable(3, srng0)  
+    sample0 = scmc(RV_X, N=1000, M=10, constraint_func=on_surface1_func, tau_T= 1e4)
     
     X = np.arange(-1,1,0.01)
     Y = np.arange(0, np.pi, 0.01)

@@ -17,7 +17,7 @@ def func2(x):
 
 if __name__ == '__main__':
     
-    srng0 = [[0,1],[0,2]]
+    srng0 = [[0,1],[0,4]]
     
     def on_func2(sample):    
         out = np.zeros(5)
@@ -28,7 +28,8 @@ if __name__ == '__main__':
         out[4] = np.abs(func2(sample[0]) - sample[1])
         return out
     
-    sample0 = scmc(N=1000, dim=2, M=20, srng=srng0, constraint_func=on_func2, tau_T= 1e3)
+    RV_X = UniformRandomVariable(2, srng0)  
+    sample0 = scmc(RV_X, N=500, M=10, constraint_func=on_func2, tau_T= 1e3)
     
     X = np.arange(0.0, 1.0, 0.01)
     Y = func2(X)

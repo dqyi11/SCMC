@@ -19,8 +19,11 @@ def on_torus_func(sample):
 
 if __name__ == '__main__':
     
-    srng0 = [[-1,1],[-1,1],[-1,1]]
-    sample0 = scmc(N=10000, dim=3, M=10, srng=srng0, constraint_func=on_torus_func, tau_T= 1e3)
+    #srng0 = [[-1,1],[-1,1],[-1,1]]
+    srng0 = [[-4,4],[-4,4],[-4,4]]
+    
+    RV_X = UniformRandomVariable(3, srng0)  
+    sample0 = scmc(RV_X, N=5000, M=20, constraint_func=on_torus_func, tau_T= 1e3)
     
     fig1 = plt.figure()
     ax1 =fig1.add_subplot(111, projection='3d')

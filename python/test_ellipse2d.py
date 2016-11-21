@@ -21,8 +21,9 @@ def ellipse2d(sample):
 
 if __name__ == '__main__':
     
-    srng0 = [[-6,6],[-3,3]]
-    sample0 = scmc(N=1000, dim=2, M=10, srng=srng0, constraint_func=ellipse2d, tau_T= 1e3)
+    srng0 = [[-6,6],[-6,6]]
+    RV_X = UniformRandomVariable(2, srng0)  
+    sample0 = scmc(RV_X, N=1000, M=10, constraint_func=ellipse2d, tau_T= 1e3)
     
     fig1 = plt.figure()
     ax1 =fig1.add_subplot(111)
