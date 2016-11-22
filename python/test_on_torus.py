@@ -26,22 +26,26 @@ if __name__ == '__main__':
     
     #RV_X = UniformRandomVariable(3, srng0)  
     RV_X = NormalRandomVariable(3, [0.,1., .5], [2,2,2])  
-    sample0, W0, lpden0 = scmc(RV_X, N=5000, M=20, constraint_func=on_torus_func, tau_T= 1e3)
-    sample1 = rejection_sampling(RV_X, 5000, constraint_func=on_torus_func, tolerance=1e-3)
-    
+    sample0, W0, lpden0 = scmc(RV_X, N=2000, M=10, constraint_func=on_torus_func, tau_T= 1e4)
+    '''
+    sample1 = rejection_sampling(RV_X, 5000, constraint_func=on_torus_func, tolerance=1e-4)
     print ks_test(sample0, sample1)
+    '''
     max_idx = np.argmax(lpden0)
+    print "MAX IDX:" + str(max_idx)
     print "MAX:" + str(sample0[max_idx,:])
     
     fig1 = plt.figure()
     ax1 =fig1.add_subplot(111, projection='3d')
-    ax1.scatter(sample0[:,0],sample0[:,1],sample0[:,2])
-    ax1.scatter(sample0[max_idx,0],sample0[max_idx,1],sample0[max_idx,2],marker='^',color='r')
+    ax1.scatter(sample0[:max_idx-1,0],sample0[:max_idx-1,1],sample0[:max_idx-1,2],color='b')
+    ax1.scatter(sample0[max_idx+1:,0],sample0[max_idx+1:,1],sample0[max_idx+1:,2],color='g')
+    ax1.scatter(sample0[max_idx,0],sample0[max_idx,1],sample0[max_idx,2],color='r')
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
     ax1.set_title('SCMC')
     
+    '''
     fig2 = plt.figure()
     ax2 =fig2.add_subplot(111, projection='3d')
     ax2.scatter(sample1[:,0],sample1[:,1],sample1[:,2])
@@ -49,5 +53,5 @@ if __name__ == '__main__':
     ax2.set_ylabel('Y')
     ax2.set_zlabel('Z')
     ax2.set_title('Rejection Sampling')
-    
+    '''
     plt.show()

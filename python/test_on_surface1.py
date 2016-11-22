@@ -37,6 +37,7 @@ if __name__ == '__main__':
     print ks_test(sample0, sample1)
     '''
     max_idx = np.argmax(lpden0)
+    print "MAX IDX:" + str(max_idx)
     print "MAX:" + str(sample0[max_idx,:])
     
     X = np.arange(-1,1,0.01)
@@ -47,12 +48,14 @@ if __name__ == '__main__':
     fig1 = plt.figure()
     ax1 =fig1.add_subplot(111, projection='3d')
     ax1.plot_surface(X, Y, Z, alpha=0.1)
-    #ax1.scatter(sample0[:,0],sample0[:,1],sample0[:,2])
-    ax1.scatter(sample0[max_idx,0],sample0[max_idx,1],sample0[max_idx,2],marker='^',color='r')
+    ax1.scatter(sample0[:max_idx-1,0],sample0[:max_idx-1,1],sample0[:max_idx-1,2],color='b')
+    ax1.scatter(sample0[max_idx+1:,0],sample0[max_idx+1:,1],sample0[max_idx+1:,2],color='g')
+    ax1.scatter(sample0[max_idx,0],sample0[max_idx,1],sample0[max_idx,2],color='r')
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
     ax1.set_zlabel('Z')
     ax1.set_title('SCMC')
+    
     '''
     fig2 = plt.figure()
     ax2 =fig2.add_subplot(111, projection='3d')
