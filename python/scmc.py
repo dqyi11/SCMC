@@ -207,4 +207,6 @@ def scmc(RV_X, N, M, constraint_func, tau_T):
             break
     
     sample = sample_seq[t]
-    return sample
+    W = W_seq[t]
+    lpden = lpden_seq[t]
+    return sample, W, lpden

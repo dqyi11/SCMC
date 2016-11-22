@@ -29,7 +29,7 @@ if __name__ == '__main__':
         return out
     
     RV_X = UniformRandomVariable(2, srng0)  
-    sample0 = scmc(RV_X, N=500, M=10, constraint_func=on_func2, tau_T= 1e3)
+    sample0, W0, lpden0 = scmc(RV_X, N=500, M=10, constraint_func=on_func2, tau_T= 1e3)
     
     X = np.arange(0.0, 1.0, 0.01)
     Y = func2(X)
