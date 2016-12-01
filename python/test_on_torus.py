@@ -25,8 +25,8 @@ if __name__ == '__main__':
     srng0 = [[-4,4],[-4,4],[-4,4]]
     
     #RV_X = UniformRandomVariable(3, srng0)  
-    RV_X = NormalRandomVariable(3, [0.,1., .5], [2,2,2])  
-    sample0, W0, lpden0 = scmc(RV_X, N=2000, M=10, constraint_func=on_torus_func, tau_T= 1e4)
+    RV_X = NormalRandomVariable(3, [0.,1., .5], [1,1,1])  
+    sample0, W0, lpden0 = scmc(RV_X, N=10000, M=10, constraint_func=on_torus_func, tau_T= 1e4)
     '''
     sample1 = rejection_sampling(RV_X, 5000, constraint_func=on_torus_func, tolerance=1e-4)
     print ks_test(sample0, sample1)

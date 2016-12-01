@@ -37,6 +37,8 @@ if __name__ == '__main__':
     ax1.plot(sample0[max_idx,0],sample0[max_idx,1],marker='o',color='r')
     ax1.set_xlabel('X')
     ax1.set_ylabel('Y')
+    ax1.set_xlim((-1.2,1.2))
+    ax1.set_ylim((-1.2,1.2))
     ax1.set_title('SCMC')
     
     
@@ -47,6 +49,8 @@ if __name__ == '__main__':
     ax2.scatter(sample1[:,0],sample1[:,1])
     ax2.set_xlabel('X')
     ax2.set_ylabel('Y')
+    ax2.set_xlim((-1.2,1.2))
+    ax2.set_ylim((-1.2,1.2))    
     ax2.set_title('Rejection Sampling')
     
     

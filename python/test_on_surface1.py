@@ -29,7 +29,7 @@ if __name__ == '__main__':
         return out
     
     #RV_X = UniformRandomVariable(3, srng0)  
-    RV_X = NormalRandomVariable(3, [1.,0., 1.], [.5,.5,.5])  
+    RV_X = NormalRandomVariable(3, [1.,0., 1.], [1.,1.,1.])  
     sample0, W0, lpden0 = scmc(RV_X, N=5000, M=10, constraint_func=on_surface1_func, tau_T= 1e4)
     '''
     sample1 = rejection_sampling(RV_X, 1000, constraint_func=on_surface1_func, tolerance=1e-3)
