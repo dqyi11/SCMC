@@ -19,6 +19,12 @@ def on_torus_func(sample):
     out[0] = abs( (2 - math.sqrt(sample[0]**2+sample[1]**2))**2 + sample[2]**2 - 1 )
     return out
 
+def log_on_torus_func(sample, tau_t, RV_X):
+
+    on_torus_func_term = on_torus_func(sample)
+    term = np.sum( norm.logcdf(- on_torus_func_term * tau_t) ) + RV_X.logpdf(sample)
+    return term  
+
 if __name__ == '__main__':
     
     #srng0 = [[-1,1],[-1,1],[-1,1]]
@@ -26,7 +32,7 @@ if __name__ == '__main__':
     
     #RV_X = UniformRandomVariable(3, srng0)  
     RV_X = NormalRandomVariable(3, [0.,1., .5], [1,1,1])  
-    sample0, W0, lpden0 = scmc(RV_X, N=10000, M=10, constraint_func=on_torus_func, tau_T= 1e4)
+    sample0, W0, lpden0 = scmc(RV_X, N=10000, M=10, log_constraint_func=log_on_torus_func, tau_T= 1e4)
     '''
     sample1 = rejection_sampling(RV_X, 5000, constraint_func=on_torus_func, tolerance=1e-4)
     print ks_test(sample0, sample1)

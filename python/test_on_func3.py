@@ -26,9 +26,15 @@ if __name__ == '__main__':
         out[3] = sample[1] - srng0[1][1]  
         out[4] = np.abs(func3(sample[0]) - sample[1]) 
         return out
+   
+    def log_on_func3(sample, tau_t, RV_X):
+    
+        on_func3_term = on_func3(sample)
+        term = np.sum( norm.logcdf(- on_func3_term * tau_t) ) + RV_X.logpdf(sample)
+        return term      
     
     RV_X = UniformRandomVariable(2, srng0)  
-    sample0, W0, lpden0 = scmc(RV_X, N=500, M=10, constraint_func=on_func3, tau_T= 1e3)
+    sample0, W0, lpden0 = scmc(RV_X, N=500, M=10, log_constraint_func=log_on_func3, tau_T= 1e3)
     
     X = np.arange(0.0, 1.0, 0.01)
     Y = func3(X)

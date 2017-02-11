@@ -28,9 +28,15 @@ if __name__ == '__main__':
         out[4] = np.abs(func1(sample[0]) - sample[1]) 
         return out
     
+    def log_on_func1(sample, tau_t, RV_X):
+    
+        on_func1_term = on_func1(sample)
+        term = np.sum( norm.logcdf(- on_func1_term * tau_t) ) + RV_X.logpdf(sample)
+        return term
+    
     RV_X = NormalRandomVariable(2, [0.5,0.5], [.5,.5])  
     #RV_X = UniformRandomVariable(2, srng0)  
-    sample0, W0, lpden0 = scmc(RV_X, N=5000, M=10, constraint_func=on_func1, tau_T= 1e3)
+    sample0, W0, lpden0 = scmc(RV_X, N=5000, M=10, log_constraint_func=log_on_func1, tau_T= 1e3)
     sample1 = rejection_sampling(RV_X, 1000, constraint_func=on_func1, tolerance=1e-3)
     
     print ks_test(sample0, sample1)

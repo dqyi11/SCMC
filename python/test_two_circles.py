@@ -18,11 +18,17 @@ def two_circles_func(sample):
     out[0] = min( (sample[0]-2) **2 + sample[1]**2 - 1, (sample[0]+2) **2 + sample[1]**2 - 1 )
     return out
 
+def log_two_circles_func(sample, tau_t, RV_X):
+    
+    two_circles_term = two_circles_func(sample)
+    term = np.sum( norm.logcdf(- two_circles_term * tau_t) ) + RV_X.logpdf(sample)
+    return term
+
 if __name__ == '__main__':
     
     #srng0 = [[-4,4],[-1,1]]
     RV_X = NormalRandomVariable(2, [0.,0.], [.5,.5])  
-    sample0, W0, lpden0 = scmc(RV_X, N=500, M=10, constraint_func=two_circles_func, tau_T= 1e3)
+    sample0, W0, lpden0 = scmc(RV_X, N=500, M=10, log_constraint_func=log_two_circles_func, tau_T= 1e3)
     sample1 = rejection_sampling(RV_X, 1000, constraint_func=two_circles_func)
     
     max_idx = np.argmax(lpden0)

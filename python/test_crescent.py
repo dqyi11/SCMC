@@ -16,12 +16,18 @@ def crecsent(sample):
     out[1] =  - (sample[0] - np.sqrt(33*sample[1]**2 + 1))
     return out
 
+def log_crecsent(sample, tau_t, RV_X):
+    
+    crecsent_term = crecsent(sample)
+    term = np.sum( norm.logcdf(- crecsent_term * tau_t) ) + RV_X.logpdf(sample)
+    return term
+
 if __name__ == '__main__':
    
     srng0 = [[-1,1],[-1,1]]
     #RV_X = UniformRandomVariable(2, srng0)  
     RV_X = NormalRandomVariable(2, [0.,0.], [.5,.5])  
-    sample0, W0, lpden0 = scmc(RV_X, N=1000, M=10, constraint_func=crecsent, tau_T= 1e3)
+    sample0, W0, lpden0 = scmc(RV_X, N=1000, M=10, log_constraint_func=log_crecsent, tau_T= 1e3)
     sample1 = rejection_sampling(RV_X, 1000, constraint_func=crecsent)
     
     print ks_test(sample0, sample1)

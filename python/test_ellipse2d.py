@@ -21,12 +21,18 @@ def ellipse2d(sample):
     out[0] = x**2 / 36 + y**2 / 9 - 1
     return out
 
+def log_ellipse2d(sample, tau_t, RV_X):
+    
+    ellipse2d_term = ellipse2d(sample)
+    term = np.sum( norm.logcdf(- ellipse2d_term * tau_t) ) + RV_X.logpdf(sample)
+    return term
+
 if __name__ == '__main__':
     
     srng0 = [[-6,6],[-6,6]]
     #RV_X = UniformRandomVariable(2, srng0)
     RV_X = NormalRandomVariable(2, [0.,1.], [2.,2.])  
-    sample0, W0, lpden0 = scmc(RV_X, N=1000, M=10, constraint_func=ellipse2d, tau_T= 1e3)
+    sample0, W0, lpden0 = scmc(RV_X, N=1000, M=10, log_constraint_func=log_ellipse2d, tau_T= 1e3)
     sample1 = rejection_sampling(RV_X, 1000, constraint_func=ellipse2d, tolerance=0)
     
     max_idx = np.argmax(lpden0)

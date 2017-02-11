@@ -72,20 +72,22 @@ def log_posterior(sample, tau_t, constraint_func, RV_X):
     term = constraint_func(sample)
     return np.sum( norm.logcdf(- term * tau_t) ) + RV_X.logpdf(sample)
 
-def Metroplis(x, t_var, d, tau_t, lpden, constraint_func, RV_X):
+def Metroplis(x, t_var, tau_t, lpden, log_constraint_func, RV_X):
     
-    # use a Gaussian jumping distribution
-    delta = np.random.normal(loc=0, scale=t_var[d], size=1)
-    newx = np.copy(x)
-    newx[d] = newx[d] + delta
-    lpnum = log_posterior(newx, tau_t, constraint_func, RV_X)
-    # acceptance ratio
-    ratio = lpnum - lpden
-    prob = min(1., np.exp(ratio))
-    u = np.random.rand()
-    if u <= prob:
-        x = newx
-        lpden = lpnum
+    dim = len(x)
+    for d in range(dim):    
+        # use a Gaussian jumping distribution
+        delta = np.random.normal(loc=0, scale=t_var[d], size=1)
+        newx = np.copy(x)
+        newx[d] = newx[d] + delta
+        lpnum = log_constraint_func(newx, tau_t, RV_X)
+        # acceptance ratio
+        ratio = lpnum - lpden
+        prob = min(1., np.exp(ratio))
+        u = np.random.rand()
+        if u <= prob:
+            x = newx
+            lpden = lpnum
 
     return x, lpden
 
@@ -101,14 +103,12 @@ def resample(weights):
     return indices
 
 # adaptive specification of the constraint parameter
-def adapt_seq(tau, tau_prev, N, sample, W, constraint_func, RV_X):
+def adapt_seq(tau, tau_prev, N, sample, W, log_constraint_func, RV_X):
     
     omega = np.zeros(N)
     for i in range(N):
-        #print sample[i]
-        term = constraint_func(sample[i,:])
-        cons1 = np.sum( norm.logcdf(- term * tau) )
-        cons2 = np.sum( norm.logcdf(- term * tau_prev) )
+        cons1 = log_constraint_func(sample[i,:], tau, RV_X)
+        cons2 = log_constraint_func(sample[i,:], tau_prev, RV_X)
         omega[i] = cons1 - cons2
   
     W = W * np.exp(omega)
@@ -119,7 +119,7 @@ def adapt_seq(tau, tau_prev, N, sample, W, constraint_func, RV_X):
         ESS = 1/np.sum(W**2)   
     return ESS - (N / 2)
 
-def scmc(RV_X, N, M, constraint_func, tau_T):
+def scmc(RV_X, N, M, log_constraint_func, tau_T):
     
     dim = RV_X.dim
     
@@ -133,7 +133,7 @@ def scmc(RV_X, N, M, constraint_func, tau_T):
     sample_seq.append(sample0)
     lpden = np.zeros(N)
     for i in range(N):
-        lpden[i] = log_posterior(sample0[i,:], tau_seq[0], constraint_func, RV_X)
+        lpden[i] = log_constraint_func(sample0[i,:], tau_seq[0], RV_X)
     lpden_seq.append(lpden)
     W0 = np.ones(N)*(1.0/N)
     W_seq.append(W0)
@@ -150,7 +150,7 @@ def scmc(RV_X, N, M, constraint_func, tau_T):
         newW = W_seq[t-1]
         
         # generate new tau_t
-        if adapt_seq(tau_T, tau_seq[t-1], N, newsample, newW, constraint_func, RV_X) > 0:
+        if adapt_seq(tau_T, tau_seq[t-1], N, newsample, newW, log_constraint_func, RV_X) > 0:
             # close enough, move to tau_T
             print "last step"
             tau_seq.append(tau_T) 
@@ -162,10 +162,8 @@ def scmc(RV_X, N, M, constraint_func, tau_T):
             ub = tau_T 
             if t!= 1:
                 lb = tau_seq[t-1]    
-                           
-            #tmp_var1 = adapt_seq(lb, tau_seq[t-1], N, newsample, newW, constraint_func)    
-            #tmp_var2 = adapt_seq(ub, tau_seq[t-1], N, newsample, newW, constraint_func)   
-            result = optimize.brenth(adapt_seq, lb, ub, args= (tau_seq[t-1], N, newsample, newW, constraint_func, RV_X))
+                             
+            result = optimize.brenth(adapt_seq, lb, ub, args= (tau_seq[t-1], N, newsample, newW, log_constraint_func, RV_X))
             
             #print adapt_seq(result, tau_seq[t-1], N, newsample, newW, constraint_func)
             
@@ -173,9 +171,8 @@ def scmc(RV_X, N, M, constraint_func, tau_T):
                 
         omega = np.zeros(N)
         for i in range(N):
-            term = constraint_func(newsample[i])
-            constraint1 = np.sum( norm.logcdf( - term * tau_seq[t] )  )
-            constraint2 = np.sum( norm.logcdf( - term * tau_seq[t-1]) ) 
+            constraint1 = log_constraint_func(newsample[i], tau_seq[t], RV_X)
+            constraint2 = log_constraint_func(newsample[i], tau_seq[t-1], RV_X)
             omega[i] = constraint1 - constraint2 
         newW = newW * np.exp(omega)
         # normalize
@@ -196,8 +193,7 @@ def scmc(RV_X, N, M, constraint_func, tau_T):
         # sample from K^t
         for j in range(M):
             for i in range(N):
-                for d in range(dim):
-                    newsample[i,:], newlpden[i] = Metroplis(newsample[i,:], t_var, d, tau_seq[t], newlpden[i], constraint_func, RV_X)   
+                newsample[i,:], newlpden[i] = Metroplis(newsample[i,:], t_var, tau_seq[t], newlpden[i], log_constraint_func, RV_X)   
         
         sample_seq.append( newsample )
         lpden_seq.append( newlpden )
