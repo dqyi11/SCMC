@@ -72,24 +72,27 @@ def log_posterior(sample, tau_t, constraint_func, RV_X):
     term = constraint_func(sample)
     return np.sum( norm.logcdf(- term * tau_t) ) + RV_X.logpdf(sample)
 
-def Metroplis(x, t_var, tau_t, lpden, log_constraint_func, RV_X):
+def Metroplis(X, t_var, tau_t, lpden, log_constraint_func, RV_X):
     
-    dim = len(x)
-    for d in range(dim):    
-        # use a Gaussian jumping distribution
-        delta = np.random.normal(loc=0, scale=t_var[d], size=1)
-        newx = np.copy(x)
-        newx[d] = newx[d] + delta
-        lpnum = log_constraint_func(newx, tau_t, RV_X)
-        # acceptance ratio
-        ratio = lpnum - lpden
-        prob = min(1., np.exp(ratio))
-        u = np.random.rand()
-        if u <= prob:
-            x = newx
-            lpden = lpnum
+    M = len(X)
+    dim = len(X[0,:])
+    
+    for i in range(M):
+        for d in range(dim):    
+            # use a Gaussian jumping distribution
+            delta = np.random.normal(loc=0, scale=t_var[d], size=1)
+            newx = np.copy(X[i,:])
+            newx[d] = newx[d] + delta
+            lpnum = log_constraint_func(newx, tau_t, RV_X)
+            # acceptance ratio
+            ratio = lpnum - lpden[i]
+            prob = min(1., np.exp(ratio))
+            u = np.random.rand()
+            if u <= prob:
+                X[i,:] = newx
+                lpden[i] = lpnum
 
-    return x, lpden
+    return X, lpden
 
 def resample(weights):
     n = len(weights)
@@ -165,8 +168,6 @@ def scmc(RV_X, N, M, log_constraint_func, tau_T):
                              
             result = optimize.brenth(adapt_seq, lb, ub, args= (tau_seq[t-1], N, newsample, newW, log_constraint_func, RV_X))
             
-            #print adapt_seq(result, tau_seq[t-1], N, newsample, newW, constraint_func)
-            
             tau_seq.append(result)
                 
         omega = np.zeros(N)
@@ -191,9 +192,8 @@ def scmc(RV_X, N, M, log_constraint_func, tau_T):
         t_var = np.std(newsample, axis=0) / (t+1)
         
         # sample from K^t
-        for j in range(M):
-            for i in range(N):
-                newsample[i,:], newlpden[i] = Metroplis(newsample[i,:], t_var, tau_seq[t], newlpden[i], log_constraint_func, RV_X)   
+        for j in range(M):            
+            newsample, newlpden = Metroplis(newsample, t_var, tau_seq[t], newlpden, log_constraint_func, RV_X)   
         
         sample_seq.append( newsample )
         lpden_seq.append( newlpden )
